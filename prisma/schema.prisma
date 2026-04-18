@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//
+// ENUMS
+//
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+//
+// USER
+//
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  bookings  Booking[]
+  reviews   Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//
+// CABIN
+//
+model Cabin {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  location      String
+  pricePerNight Float
+  capacity      Int
+
+  images        CabinImage[]
+  bookings      Booking[]
+  reviews       Review[]
+  availability  AvailabilityBlock[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+//
+// CABIN IMAGES (1 cabin -> many images)
+//
+model CabinImage {
+  id        String @id @default(uuid())
+  url       String
+
+  cabinId   String
+  cabin     Cabin  @relation(fields: [cabinId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+//
+// BOOKINGS
+//
+model Booking {
+  id         String   @id @default(uuid())
+
+  userId     String
+  cabinId    String
+
+  startDate  DateTime
+  endDate    DateTime
+
+  totalPrice Float
+  status     BookingStatus @default(PENDING)
+
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cabin      Cabin  @relation(fields: [cabinId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([cabinId])
+  @@index([userId])
+  @@index([startDate, endDate])
+}
+
+//
+// AVAILABILITY BLOCKS (admin blocking dates)
+//
+model AvailabilityBlock {
+  id        String   @id @default(uuid())
+
+  cabinId   String
+  cabin     Cabin @relation(fields: [cabinId], references: [id], onDelete: Cascade)
+
+  startDate DateTime
+  endDate   DateTime
+
+  reason    String?
+
+  createdAt DateTime @default(now())
+
+  @@index([cabinId])
+  @@index([startDate, endDate])
+}
+
+//
+// REVIEWS (optional but very strong for portfolio)
+//
+model Review {
+  id        String @id @default(uuid())
+
+  userId    String
+  cabinId   String
+
+  rating    Int
+  comment   String?
+
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cabin     Cabin @relation(fields: [cabinId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([cabinId])
+  @@index([userId])
+}
