@@ -36,17 +36,15 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(setLoading(true));
-
     const nameError = validateField(form.name, ["required"]);
     const emailError = validateField(form.email, ["required", "email"]);
     const passwordError = validateField(form.password, ["required", { minLength: 8 }]);
     if (nameError || emailError || passwordError) {
       setErrors((prevErrors) => ({ ...prevErrors, name: nameError, email: emailError, password: passwordError }));
-      dispatch(setLoading(true));
       return;
     }
     try {
+      dispatch(setLoading(true));
       await api.post("/auth/register", form);
       navigate("/login");
       dispatch(showToast({ message: "Registration successful", type: "success" }));
