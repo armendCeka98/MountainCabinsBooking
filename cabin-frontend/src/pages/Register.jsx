@@ -43,6 +43,7 @@ export default function Register() {
     const passwordError = validateField(form.password, ["required", { minLength: 8 }]);
     if (nameError || emailError || passwordError) {
       setErrors((prevErrors) => ({ ...prevErrors, name: nameError, email: emailError, password: passwordError }));
+      dispatch(setLoading(true));
       return;
     }
     try {
