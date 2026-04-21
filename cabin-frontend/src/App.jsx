@@ -6,6 +6,7 @@ import Loader from "./components/Loader";
 import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
+import AdminLogin from "./pages/Admin/Login";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
         </Route>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />

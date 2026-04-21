@@ -35,4 +35,26 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { login, register };
+const adminLogin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const adminCount = await prisma.administrators.count();
+    console.log(adminCount);
+    const admin = await prisma.administrators.findUnique({
+      where: { username },
+    });
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const isPasswordValid = password === admin.password;
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = jwt.sign({ userId: admin.id }, process.env.JWT_SECRET);
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { login, register, adminLogin };
