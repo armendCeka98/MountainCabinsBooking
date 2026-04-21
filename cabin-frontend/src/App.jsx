@@ -5,6 +5,7 @@ import AuthLayout from "./layout/AuthLayout";
 import Loader from "./components/Loader";
 import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
